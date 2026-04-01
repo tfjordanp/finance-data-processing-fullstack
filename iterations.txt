@@ -1,0 +1,87 @@
+1st:
+Default user with known credentials:
+Login only page(no register)
+Create,View,Update,Delete records and users
+User:
+ id
+ email
+ password
+ dateOfBirth
+ gender
+ isActive
+Record:
+ id
+ amount,
+ type: income|expense
+ category: Category
+ date
+ notes
+
+Category: /* Pre-feed default categories in the system */
+ id
+ name
+
+
+
+
+1.5th:
+Add Search/Filter records
+
+
+2nd:
+Add Pagination on View Interfaces
+
+
+3rd:
+Add Dashboard Summary actions
+Total income
+Total expenses
+Net balance
+Category wise totals
+Recent activity
+Monthly or weekly trends
+
+
+
+4th:
+Add a UserRole Function Relation, f: U -> R with fix known roles(The Administration AC model here is static/completely deterministic at compile time)
+Roles = {Viewer, Analyst, Admin}.
+Then hard-code the policies:
+Viewer has access only on Dashboard actions
+Analyst on View-Like Record actions + Dashboard actions
+Admin can do everything
+
+A function mapping works here because roles here are purely inherited/hierachical in nature
+So, making a user to have many roles is useless since one role shall be a complete superset of the other.
+
+
+5th:
+Make sure Tokens are used for Authentication
+
+6th:
+Include Soft delete functionality
+Only the Admin role has access to the View-Like actions variant with the **ignoreDeleted** flag
+
+7th:
+Include Rate Limiting to protect the API from DDoS attacks
+
+8th:
+Add auth and access control logging for accountability
+
+Last??:
+Complete Documentation
+Complete tests unit/intergration/product
+
+
+Types btw backend and frontend should be tightly coupled, i.e.
+frontend types should be function of backend types
+
+Input Validation should be done correctly,
+Server should be robust to any client data (should not crash)
+
+
+Perspectives:
+A dynamic Administration model (i.e. that can change at runtime ??), (up to role creation even !!!) ??
+A minting approach for rate limiting ???
+
+
