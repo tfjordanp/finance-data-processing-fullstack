@@ -25,8 +25,7 @@ Category: /* Pre-feed default categories in the system */
 
 
 1.5th:
-Add Search/Filter records
-
+Add Search/Filter on all complex models(not sematically evolving value domains like category) with list interfaces
 
 2nd:
 Add Pagination on View Interfaces
@@ -79,6 +78,7 @@ frontend types should be function of backend types
 Input Validation should be done correctly,
 Server should be robust to any client data (should not crash)
 
+API URL should support versionning !!
 
 Perspectives:
 A dynamic Administration model (i.e. that can change at runtime ??), (up to role creation even !!!) ??

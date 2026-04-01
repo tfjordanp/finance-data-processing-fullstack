@@ -1,6 +1,8 @@
 import dotenv from "dotenv";
 import app from "./app";
 import { AppDataSource } from "./data-source";
+import { Category } from "./models/Category";
+import { User } from "./models/User";
 import { hashPassword } from "./services/auth.service";
 
 dotenv.config();
@@ -11,7 +13,7 @@ AppDataSource.initialize()
   .then(async () => {
     console.log("Data source initialized.");
 
-    const categoryRepo = AppDataSource.getRepository("Category");
+    const categoryRepo = AppDataSource.getRepository(Category);
     const defaults = ["Food", "Transport", "Utilities", "Salary", "Entertainment"];
     for (const name of defaults) {
       const exists = await categoryRepo.findOne({ where: { name } });
@@ -20,7 +22,7 @@ AppDataSource.initialize()
       }
     }
 
-    const userRepo = AppDataSource.getRepository("User");
+    const userRepo = AppDataSource.getRepository(User);
     const defaultEmail = process.env.DEFAULT_USER_EMAIL || "admin@example.com";
     const defaultPassword = process.env.DEFAULT_USER_PASSWORD || "password123";
     let defaultUser = await userRepo.findOne({ where: { email: defaultEmail } });
