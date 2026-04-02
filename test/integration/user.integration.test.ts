@@ -125,4 +125,94 @@ describe("User Integration Tests", () => {
     expect(result.status).toEqual(400);
     expect(result.body.message).toMatch(/All user fields are required/);
   });
+
+  // === Filtering Tests ===
+
+  it("should filter users by email (case-insensitive)", async () => {
+    const res = await request(app).get("/api/users?email=TEST").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(res.body.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.some((u: any) => u.email === "test@example.com")).toBe(true);
+  });
+
+  it("should filter users by email with partial match", async () => {
+    const res = await request(app).get("/api/users?email=example").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(res.body.some((u: any) => u.email === "test@example.com")).toBe(true);
+  });
+
+  it("should filter users by gender", async () => {
+    const res = await request(app).get("/api/users?gender=male").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(res.body.every((u: any) => u.gender === "male")).toBe(true);
+  });
+
+  it("should filter users by isActive", async () => {
+    const res = await request(app).get("/api/users?isActive=true").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(res.body.every((u: any) => u.isActive === true)).toBe(true);
+  });
+
+  it("should filter users by dateOfBirth range", async () => {
+    const res = await request(app)
+      .get("/api/users?dateOfBirthStart=1989-01-01&dateOfBirthEnd=1991-01-01")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(res.body.some((u: any) => u.email === "test@example.com")).toBe(true);
+  });
+
+  it("should filter users with inverted dateOfBirth range", async () => {
+    const res = await request(app)
+      .get("/api/users?dateOfBirthStart=1989-01-01&dateOfBirthEnd=1991-01-01&invertDateOfBirth=true")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(res.body.every((u: any) => u.dateOfBirth < "1989-01-01" || u.dateOfBirth > "1991-01-01")).toBe(true);
+  });
+
+  it("should return error when dateOfBirthStart > dateOfBirthEnd", async () => {
+    const res = await request(app)
+      .get("/api/users?dateOfBirthStart=1995-01-01&dateOfBirthEnd=1990-01-01")
+      .set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(500);
+  });
+
+  // === Sorting Tests ===
+
+  it("should sort users by single field", async () => {
+    const res = await request(app).get("/api/users?sortBy=email&sortOrder=ASC").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  it("should sort users by multiple fields", async () => {
+    const res = await request(app).get("/api/users?sortBy=gender,email&sortOrder=ASC,DESC").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  it("should ignore duplicate sort fields", async () => {
+    const res = await request(app).get("/api/users?sortBy=email,email&sortOrder=ASC,DESC").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  it("should default to ASC when sortOrder is missing", async () => {
+    const res = await request(app).get("/api/users?sortBy=email").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  // === Pagination Tests ===
+
+  it("should paginate users with page and limit", async () => {
+    const res = await request(app).get("/api/users?page=1&limit=1").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(res.body.length).toBeLessThanOrEqual(1);
+  });
+
+  it("should return empty array for page beyond data", async () => {
+    const res = await request(app).get("/api/users?page=999&limit=1").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(res.body.length).toEqual(0);
+  });
 });

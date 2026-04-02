@@ -2,6 +2,7 @@ import { Response } from "express";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { findUserByEmail, findUserById, getAllUsers, createUser, updateUser, deleteUser } from "../repositories/user.repository";
 import { hashPassword } from "../services/auth.service";
+import { UserFilterDto } from "../dtos/filters.dto";
 
 import { User } from "../models/User";
 
@@ -71,7 +72,20 @@ export const listUsers = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-  const users = await getAllUsers();
+  const filters: UserFilterDto = {
+    email: req.query.email as string | undefined,
+    dateOfBirthStart: req.query.dateOfBirthStart as string | undefined,
+    dateOfBirthEnd: req.query.dateOfBirthEnd as string | undefined,
+    invertDateOfBirth: req.query.invertDateOfBirth === "true",
+    gender: req.query.gender as User["gender"] | undefined,
+    isActive: req.query.isActive !== undefined ? req.query.isActive === "true" : undefined,
+    page: req.query.page ? Number(req.query.page) : undefined,
+    limit: req.query.limit ? Number(req.query.limit) : undefined,
+    sortBy: typeof req.query.sortBy === "string" ? req.query.sortBy.split(",") : undefined,
+    sortOrder: typeof req.query.sortOrder === "string" ? req.query.sortOrder.split(",") : undefined
+  };
+
+  const users = await getAllUsers(filters);
   return res.json(users);
 };
 

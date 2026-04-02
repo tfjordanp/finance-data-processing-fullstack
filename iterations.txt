@@ -25,7 +25,8 @@ Category: /* Pre-feed default categories in the system */
 
 
 1.5th:
-Add Search/Filter on all complex models(not sematically evolving value domains like category) with list interfaces
+Add Search/Filter on all complex models(not sematically non-static value domains like category) with list interfaces
+
 
 2nd:
 Add Pagination on View Interfaces

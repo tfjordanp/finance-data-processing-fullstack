@@ -1,6 +1,7 @@
 import { Response } from "express";
 import { AuthRequest } from "../middleware/auth.middleware";
 import { createTransaction, getAllTransactions, getTransactionById, updateTransaction, deleteTransaction } from "../repositories/transaction.repository";
+import { TransactionFilterDto } from "../dtos/filters.dto";
 
 import { Transaction } from "../models/Transaction";
 
@@ -20,7 +21,7 @@ const isDateNotInFuture = (dateStr: string): boolean => {
 
 export const toTransactionPayload = (body: any): TransactionPayload | null => {
   /* 
-   if validation fails becaues of date being in the future, then it is better to provide a more descriptive feedback rather than a generic "Invalid Payload".
+   if validation fails because of date being in the future, then it is better to provide a more descriptive feedback rather than a generic "Invalid Payload".
     The impl is left as such for simplicity, this comment is meant to be a note for improvement in the future when we can have more time to refactor the validation logic and error handling
    */
   if (
@@ -68,7 +69,23 @@ export const listTransactions = async (req: AuthRequest, res: Response) => {
   const userId = req.user?.id;
   if (!userId) return res.status(401).json({ message: "Unauthorized" });
 
-  const records = await getAllTransactions();
+  const filters: TransactionFilterDto = {
+    amountMin: req.query.amountMin ? Number(req.query.amountMin) : undefined,
+    amountMax: req.query.amountMax ? Number(req.query.amountMax) : undefined,
+    invertAmount: req.query.invertAmount === "true",
+    type: req.query.type as Transaction["type"] | undefined,
+    categoryIds: typeof req.query.categoryIds === "string" ? req.query.categoryIds.split(",") : undefined,
+    dateStart: req.query.dateStart as string | undefined,
+    dateEnd: req.query.dateEnd as string | undefined,
+    invertDate: req.query.invertDate === "true",
+    notes: req.query.notes as string | undefined,
+    page: req.query.page ? Number(req.query.page) : undefined,
+    limit: req.query.limit ? Number(req.query.limit) : undefined,
+    sortBy: typeof req.query.sortBy === "string" ? req.query.sortBy.split(",") : undefined,
+    sortOrder: typeof req.query.sortOrder === "string" ? req.query.sortOrder.split(",") : undefined
+  };
+
+  const records = await getAllTransactions(filters);
   return res.json(records);
 };
 
