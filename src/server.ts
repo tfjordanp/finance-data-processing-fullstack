@@ -32,7 +32,8 @@ AppDataSource.initialize()
         password: await hashPassword(defaultPassword),
         dateOfBirth: "1990-01-01",
         gender: 'male',
-        isActive: true
+        isActive: true,
+        role: "admin"
       });
       await userRepo.save(defaultUser);
       console.log(`Default user created: ${defaultEmail} / ${defaultPassword}`);
