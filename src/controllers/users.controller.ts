@@ -82,7 +82,8 @@ export const listUsers = async (req: AuthRequest, res: Response) => {
     page: req.query.page ? Number(req.query.page) : undefined,
     limit: req.query.limit ? Number(req.query.limit) : undefined,
     sortBy: typeof req.query.sortBy === "string" ? req.query.sortBy.split(",") : undefined,
-    sortOrder: typeof req.query.sortOrder === "string" ? req.query.sortOrder.split(",") : undefined
+    sortOrder: typeof req.query.sortOrder === "string" ? req.query.sortOrder.split(",") : undefined,
+    withTotalCount: req.query.withTotalCount === "true"
   };
 
   const users = await getAllUsers(filters);
@@ -159,3 +160,4 @@ export const deleteUserHandler = async (req: AuthRequest, res: Response) => {
 
   return res.status(204).send();
 };
+

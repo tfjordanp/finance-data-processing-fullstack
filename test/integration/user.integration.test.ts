@@ -215,4 +215,19 @@ describe("User Integration Tests", () => {
     expect(res.status).toEqual(200);
     expect(res.body.length).toEqual(0);
   });
+
+  it("should return users with total count when withTotalCount is true", async () => {
+    const res = await request(app).get("/api/users?withTotalCount=true").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(res.body).toHaveProperty("data");
+    expect(res.body).toHaveProperty("total", 1);
+    expect(Array.isArray(res.body.data)).toBe(true);
+  });
+
+  it("should return just array of users when withTotalCount is false or missing", async () => {
+    const res = await request(app).get("/api/users").set("Authorization", `Bearer ${token}`);
+    expect(res.status).toEqual(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body).not.toHaveProperty("data");
+  });
 });

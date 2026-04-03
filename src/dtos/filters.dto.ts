@@ -13,6 +13,7 @@ export type UserFilterDto = {
   limit?: number;
   sortBy?: string[];
   sortOrder?: string[];
+  withTotalCount?: boolean;
 };
 
 export type TransactionFilterDto = {
@@ -30,4 +31,6 @@ export type TransactionFilterDto = {
   limit?: number;
   sortBy?: string[];
   sortOrder?: string[];
+  withTotalCount?: boolean;
 };
+

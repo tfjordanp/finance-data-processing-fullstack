@@ -82,7 +82,8 @@ export const listTransactions = async (req: AuthRequest, res: Response) => {
     page: req.query.page ? Number(req.query.page) : undefined,
     limit: req.query.limit ? Number(req.query.limit) : undefined,
     sortBy: typeof req.query.sortBy === "string" ? req.query.sortBy.split(",") : undefined,
-    sortOrder: typeof req.query.sortOrder === "string" ? req.query.sortOrder.split(",") : undefined
+    sortOrder: typeof req.query.sortOrder === "string" ? req.query.sortOrder.split(",") : undefined,
+    withTotalCount: req.query.withTotalCount === "true"
   };
 
   const records = await getAllTransactions(filters);
@@ -153,3 +154,4 @@ export const updateTransactionHandler = async (req: AuthRequest, res: Response) 
   if (!updated) return res.status(404).json({ message: "Not found" });
   return res.json(updated);
 };
+

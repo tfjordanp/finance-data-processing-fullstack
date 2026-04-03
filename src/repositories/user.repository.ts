@@ -54,12 +54,18 @@ export const getAllUsers = async (filters?: UserFilterDto) => {
     });
   }
 
-  return UserRepository.find({
+  const [data, total] = await UserRepository.findAndCount({
     where,
     order,
     skip: filters?.page && filters?.limit ? (filters.page - 1) * filters.limit : undefined,
     take: filters?.limit
   });
+
+  if (filters?.withTotalCount) {
+    return { data, total };
+  }
+
+  return data;
 };
 
 export const updateUser = async (id: string, data: Partial<User>) => {
@@ -75,3 +81,4 @@ export const createUser = async (user: Partial<User>) => {
   const entity = UserRepository.create(user);
   return UserRepository.save(entity);
 };
+

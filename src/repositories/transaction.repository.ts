@@ -60,13 +60,29 @@ export const getAllTransactions = async (filters?: TransactionFilterDto) => {
     });
   }
 
-  return TransactionRepository.find({
+  /*
+  Note: It is possible to further optimize the query by only joining the Category table when categoryIds filter is provided. However, this adds complexity to the code and may not be worth it unless performance testing shows a significant benefit. For simplicity, we will always join the Category table since it's a common relation that may be needed for most queries.
+  */
+  if (filters?.withTotalCount) {
+    const [data, total] = await TransactionRepository.findAndCount({
+        where,
+        order,
+        relations: ["category"],
+        skip: filters?.page && filters?.limit ? (filters.page - 1) * filters.limit : undefined,
+        take: filters?.limit
+    });
+    return { data, total };
+  }
+
+  const data = await TransactionRepository.find({
     where,
     order,
     relations: ["category"],
     skip: filters?.page && filters?.limit ? (filters.page - 1) * filters.limit : undefined,
     take: filters?.limit
   });
+
+  return data;
 };
 
 export const getTransactionById = async (id: string) => {
@@ -88,3 +104,4 @@ export const updateTransaction = async (id: string, data: Partial<Transaction>) 
 export const deleteTransaction = async (id: string) => {
   return TransactionRepository.delete({ id });
 };
+
