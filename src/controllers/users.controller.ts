@@ -9,7 +9,8 @@ import { User } from "../models/User";
 export type UserPayload = Omit<User, "id" | "createdAt">;
 
 export const toUserPayload = (body: any): UserPayload | null => {
-  const allowedGenders = ["male", "female", "other"] as const;
+  const allowedGenders = ["male", "female"] as const;
+  const allowedRoles = ["viewer", "analyst", "admin"] as const;
   if (
     !!body &&
     typeof body.email === "string" &&
@@ -20,14 +21,17 @@ export const toUserPayload = (body: any): UserPayload | null => {
     !!body.dateOfBirth.trim() &&
     typeof body.gender === "string" &&
     allowedGenders.includes(body.gender) &&
-    typeof body.isActive === "boolean"
+    typeof body.isActive === "boolean" &&
+    typeof body.role === "string" &&
+    allowedRoles.includes(body.role)
   ) {
     return {
       email: body.email,
       password: body.password,
       dateOfBirth: body.dateOfBirth,
       gender: body.gender,
-      isActive: body.isActive
+      isActive: body.isActive,
+      role: body.role
     };
   }
   return null;
@@ -40,7 +44,7 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
   const user = await findUserById(userId);
   if (!user) return res.status(404).json({ message: "Not found" });
 
-  return res.json({ id: user.id, email: user.email, dateOfBirth: user.dateOfBirth, gender: user.gender, isActive: user.isActive, createdAt: user.createdAt });
+  return res.json({ id: user.id, email: user.email, dateOfBirth: user.dateOfBirth, gender: user.gender, isActive: user.isActive, createdAt: user.createdAt, role: user.role });
 };
 
 export const createUserHandler = async (req: AuthRequest, res: Response) => {
@@ -62,10 +66,11 @@ export const createUserHandler = async (req: AuthRequest, res: Response) => {
     password: await hashPassword(payload.password),
     dateOfBirth: payload.dateOfBirth,
     gender: payload.gender,
-    isActive: payload.isActive
+    isActive: payload.isActive,
+    role: payload.role
   });
 
-  return res.status(201).json({ id: created.id, email: created.email, dateOfBirth: created.dateOfBirth, gender: created.gender, isActive: created.isActive, createdAt: created.createdAt });
+  return res.status(201).json({ id: created.id, email: created.email, dateOfBirth: created.dateOfBirth, gender: created.gender, isActive: created.isActive, createdAt: created.createdAt, role: created.role });
 };
 
 export const listUsers = async (req: AuthRequest, res: Response) => {
@@ -102,7 +107,7 @@ export const getUser = async (req: AuthRequest, res: Response) => {
   const user = await findUserById(targetId);
   if (!user) return res.status(404).json({ message: "Not found" });
 
-  return res.json({ id: user.id, email: user.email, dateOfBirth: user.dateOfBirth, gender: user.gender, isActive: user.isActive, createdAt: user.createdAt });
+  return res.json({ id: user.id, email: user.email, dateOfBirth: user.dateOfBirth, gender: user.gender, isActive: user.isActive, createdAt: user.createdAt , role: user.role});
 };
 
 export const updateUserHandler = async (req: AuthRequest, res: Response) => {
@@ -130,7 +135,8 @@ export const updateUserHandler = async (req: AuthRequest, res: Response) => {
     password: await hashPassword(payload.password),
     dateOfBirth: payload.dateOfBirth,
     gender: payload.gender,
-    isActive: payload.isActive
+    isActive: payload.isActive,
+    role: payload.role
   };
 
   const updated = await updateUser(targetId, updatePayload);
@@ -142,7 +148,8 @@ export const updateUserHandler = async (req: AuthRequest, res: Response) => {
     dateOfBirth: updated.dateOfBirth,
     gender: updated.gender,
     isActive: updated.isActive,
-    createdAt: updated.createdAt
+    createdAt: updated.createdAt,
+    role: updated.role
   });
 };
 

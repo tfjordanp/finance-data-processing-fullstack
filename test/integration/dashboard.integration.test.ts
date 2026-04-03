@@ -28,7 +28,8 @@ describe("Dashboard Integration Tests", () => {
       password: hashed, 
       dateOfBirth: "1995-01-01", 
       gender: "female", 
-      isActive: true 
+      isActive: true ,
+      role: "admin"
     });
 
     const login = await request(app)

@@ -17,6 +17,9 @@ export class User {
   @Column({ type: "text" })
   gender!: "male" | "female";
 
+  @Column({ type: "text" })
+  role!: "viewer" | "analyst" | "admin";
+
   @Column({ default: true })
   isActive!: boolean;
 

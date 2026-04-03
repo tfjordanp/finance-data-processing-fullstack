@@ -18,7 +18,7 @@ describe("Category Integration Tests", () => {
 
     const userRepo = AppDataSource.getRepository(User);
     const hashed = await hashPassword("pass123");
-    await userRepo.save(userRepo.create({ email: "catuser@example.com", password: hashed, dateOfBirth: "1990-01-01", gender: "male", isActive: true }));
+    await userRepo.save(userRepo.create({ email: "catuser@example.com", password: hashed, dateOfBirth: "1990-01-01", gender: "male", isActive: true, role: "admin" }));
 
     const login = await request(app).post("/api/auth/login").send({ email: "catuser@example.com", password: "pass123" });
     expect(login.status).toEqual(200);

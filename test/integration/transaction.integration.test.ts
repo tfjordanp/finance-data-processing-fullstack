@@ -21,7 +21,7 @@ describe("Transaction Integration Tests", () => {
     const userRepo = AppDataSource.getRepository(User);
     const rawPassword = "pwd123";
     const hashed = await hashPassword(rawPassword);
-    const user = userRepo.create({ email: "txuser@example.com", password: hashed, dateOfBirth: "1991-03-03", gender: "male", isActive: true });
+    const user = userRepo.create({ email: "txuser@example.com", password: hashed, dateOfBirth: "1991-03-03", gender: "male", isActive: true, role: "admin" });
     await userRepo.save(user);
 
     const login = await request(app).post("/api/auth/login").send({ email: "txuser@example.com", password: rawPassword });

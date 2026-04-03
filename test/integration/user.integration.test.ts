@@ -20,7 +20,8 @@ describe("User Integration Tests", () => {
       password: hashedPassword,
       dateOfBirth: "1990-02-15",
       gender: "male",
-      isActive: true
+      isActive: true,
+      role: "admin"
     });
     const savedUser = await userRepo.save(user);
     userId = savedUser.id;
@@ -62,22 +63,22 @@ describe("User Integration Tests", () => {
     const update = await request(app)
       .put(`/api/users/${userId}`)
       .set("Authorization", `Bearer ${token}`)
-      .send({ email: "test@example.com", password: rawPassword, dateOfBirth: "1990-05-05", gender: "other", isActive: false });
+      .send({ email: "test@example.com", password: rawPassword, dateOfBirth: "1990-05-05", gender: "male", isActive: false, role: "analyst" });
     expect(update.status).toEqual(200);
-    expect(update.body).toMatchObject({ dateOfBirth: "1990-05-05", gender: "other", isActive: false });
+    expect(update.body).toMatchObject({ dateOfBirth: "1990-05-05", gender: "male", isActive: false, role: "analyst" });
   });
 
   it("should return 409 when updating to an email already in use", async () => {
     const createResp = await request(app)
       .post("/api/users")
       .set("Authorization", `Bearer ${token}`)
-      .send({ email: "newuser@example.com", password: "NewPass123", dateOfBirth: "1995-08-20", gender: "female", isActive: true });
+      .send({ email: "newuser@example.com", password: "NewPass123", dateOfBirth: "1995-08-20", gender: "female", isActive: true, role: "analyst" });
     expect(createResp.status).toEqual(201);
 
     const conflict = await request(app)
       .put(`/api/users/${userId}`)
       .set("Authorization", `Bearer ${token}`)
-      .send({ email: "newuser@example.com", password: rawPassword, dateOfBirth: "1990-05-05", gender: "other", isActive: false });
+      .send({ email: "newuser@example.com", password: rawPassword, dateOfBirth: "1990-05-05", gender: "female", isActive: false, role: "analyst" });
 
     expect(conflict.status).toEqual(409);
     expect(conflict.body.message).toMatch(/Email already in use/);
@@ -100,7 +101,8 @@ describe("User Integration Tests", () => {
         password: "NewPass123",
         dateOfBirth: "1995-08-20",
         gender: "female",
-        isActive: true
+        isActive: true,
+        role: "viewer"
       });
 
     expect(res.status).toEqual(201);
@@ -108,7 +110,8 @@ describe("User Integration Tests", () => {
       email: "newuser@example.com",
       dateOfBirth: "1995-08-20",
       gender: "female",
-      isActive: true
+      isActive: true,
+      role: "viewer"
     });
 
     // created user should be retrievable in list
