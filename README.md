@@ -128,3 +128,8 @@ The following professional functionalities are targeted for future releases:
 2.  **Scalable Foundations:** The code structure allows SQLite and On-the-fly math to be replaced with PostgreSQL and Caching layers without changing core business logic.
 3.  **Type Safety:** Built with **TypeScript**, catching errors at compile-time and serving as living documentation.
 4.  **Security-First:** Authorization is integrated directly into the routing layer via "Waterfall" middleware.
+
+
+
+![User Management Panel Preview](assets/users-page.PNG)
+![Transactions Panel Preview](assets/transactions-page.PNG)
